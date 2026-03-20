@@ -1,0 +1,21 @@
+version: "3.9" #Estandar de version de docker-compose, no es necesario especificar la version, pero se recomienda para evitar problemas de compatibilidad.
+
+services: # Definición de los servicios que se van a utilizar en la aplicación, en este caso solo se define un servicio llamado "db" que utiliza la imagen de MySQL versión 8.
+  db:
+    image: mysql:8 # Podria ser otra version mas nueva o especigicar el sistema operativo, por ejemplo mysql:9.6.0-oraclelinux9
+    container_name: payments_db # Nombre del contenedor, es opcional pero puede ser útil para identificar el contenedor en caso de tener varios servicios.
+    environment: # Variables de entorno que configuran MySQL al iniciarse
+      MYSQL_ROOT_PASSWORD: root # Es obligatorio
+      MYSQL_DATABASE: payments # Cuando se crea el contenedor, se crea una base de datos con este nombre, es opcional pero puede ser útil para evitar tener que crear la base de datos manualmente después de iniciar el contenedor.
+      MYSQL_USER: user #Usuario llamado "user"
+      MYSQL_PASSWORD: password #Contraseña para el usuario "user", es este caso "password"."
+    ports:
+      - "3306:3306" # izquierda = mi máquina, derecha = contenedor
+    volumes:
+      - mysql_data:/var/lib/mysql #Estandar
+ # Definición de los volúmenes que se van a utilizar en la aplicación, en este caso se define un volumen 
+ # llamado "mysql_data" que se monta en el contenedor en la ruta "/var/lib/mysql", 
+ # que es donde MySQL almacena sus datos. Esto permite que los datos de la base de datos se mantengan 
+ # persistentes incluso si el contenedor se detiene o se elimina.
+volumes:
+  mysql_data:
