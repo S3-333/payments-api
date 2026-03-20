@@ -1,4 +1,5 @@
-#Codigo de prueba, para probar los crud de account
+#Codigo de prueba, para probar la funcion de crear cuenta, se puede ejecutar este archivo 
+# directamente para probarlo
 
 from src.infrastructure.database.database import SessionLocal
 from src.infrastructure.database.crud.account_crud import create_account
@@ -8,10 +9,15 @@ def main():
     db = SessionLocal()
 
     try:
-        account = create_account(db, "Santiago", 1000)
-        print(account.id, account.owner, account.balance)
-    except Exception as e:
-        print("❌ Error:", e)
+        acc1 = create_account(db, "Santiago", 1000)
+        acc2 = create_account(db, "Juan", 500)
+        acc3 = create_account(db, "Maria", 200)
+
+        print("Cuentas creadas:")
+        print(acc1.id, acc1.owner, acc1.balance)
+        print(acc2.id, acc2.owner, acc2.balance)
+        print(acc3.id, acc3.owner, acc3.balance)
+
     finally:
         db.close()
 
