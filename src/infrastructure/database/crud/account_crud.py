@@ -35,8 +35,24 @@ def transfer_money(db: Session, from_account_id: int, to_account_id: int, amount
 
     try:
         # Busca las cuentas de origen y destino de la transferencia
-        from_account = db.query(Account).filter(Account.id == from_account_id).first()
-        to_account = db.query(Account).filter(Account.id == to_account_id).first()
+        # Antes:
+            # from_account = db.query(Account).filter(Account.id == from_account_id).first()
+            # to_account = db.query(Account).filter(Account.id == to_account_id).first()
+
+        #Ahora con with_for_update() para bloquear las filas de las cuentas durante la transferencia, 
+        # evitando problemas de concurrencia (E.g: que se intente transferir desde la misma cuenta al mismo tiempo)
+        from_account = (
+            db.query(Account)
+            .filter(Account.id == from_account_id)
+            .with_for_update()
+            .first()
+        )
+        to_account = (
+            db.query(Account)
+            .filter(Account.id == to_account_id)
+            .with_for_update()
+            .first()
+        )
 
         # Si alguna de las cuentas no existe, error
         if not from_account or not to_account:
