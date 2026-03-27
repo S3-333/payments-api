@@ -6,7 +6,6 @@ from src.domain.repositories.account_repository import AccountRepository
 from src.infrastructure.database.models.account_model import Account
 
 
-
 class AccountRepositoryImpl(AccountRepository):
 
     def get_by_id(self, db, account_id: int, for_update: bool = False):
