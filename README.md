@@ -2,9 +2,6 @@
 
 Backend en **FastAPI** con **SQLAlchemy**, **MySQL**, reglas de negocio en capas (dominio / aplicación / infraestructura / presentación), bloqueo de filas para transferencias y migraciones con **Alembic**.
 
-[![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
-*(Sustituye `OWNER/REPO` por tu usuario y nombre del repositorio en GitHub tras el primer push.)*
-
 ---
 
 ## Tabla de contenidos
