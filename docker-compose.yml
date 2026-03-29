@@ -1,21 +1,32 @@
-version: "3.9" #Estandar de version de docker-compose, no es necesario especificar la version, pero se recomienda para evitar problemas de compatibilidad.
+# =============================================================================
+# Docker Compose: solo levanta MySQL en un contenedor para desarrollo local.
+# La API FastAPI NO va aquí: la corres en tu máquina con uvicorn y te conectas a localhost:3306.
+# Comandos típicos:
+#   docker compose up -d          # arranca MySQL en segundo plano
+#   docker compose ps             # ver estado
+#   docker compose logs -f db     # ver logs de MySQL
+# =============================================================================
 
-services: # Definición de los servicios que se van a utilizar en la aplicación, en este caso solo se define un servicio llamado "db" que utiliza la imagen de MySQL versión 8.
+services:
   db:
-    image: mysql:8 # Podria ser otra version mas nueva o especigicar el sistema operativo, por ejemplo mysql:9.6.0-oraclelinux9
-    container_name: payments_db # Nombre del contenedor, es opcional pero puede ser útil para identificar el contenedor en caso de tener varios servicios.
-    environment: # Variables de entorno que configuran MySQL al iniciarse
-      MYSQL_ROOT_PASSWORD: root # Es obligatorio
-      MYSQL_DATABASE: payments # Cuando se crea el contenedor, se crea una base de datos con este nombre, es opcional pero puede ser útil para evitar tener que crear la base de datos manualmente después de iniciar el contenedor.
-      MYSQL_USER: user #Usuario llamado "user"
-      MYSQL_PASSWORD: password #Contraseña para el usuario "user", es este caso "password"."
+    image: mysql:8
+    container_name: payments_db
+
+    # Variables que el script de entrada de la imagen MySQL usa al crear la instancia:
+    environment:
+      MYSQL_ROOT_PASSWORD: root # usuario root (solo dev; en prod usar secretos)
+      MYSQL_DATABASE: payments # base creada automáticamente al iniciar
+      MYSQL_USER: user # usuario de aplicación (coincide con DATABASE_URL por defecto)
+      MYSQL_PASSWORD: password
+
+    # Mapeo puerto: izquierda = tu PC, derecha = dentro del contenedor
     ports:
-      - "3306:3306" # izquierda = mi máquina, derecha = contenedor
+      - "3306:3306"
+
+    # Volumen nombrado: los datos sobreviven a reinicios del contenedor (persistencia)
     volumes:
-      - mysql_data:/var/lib/mysql #Estandar
- # Definición de los volúmenes que se van a utilizar en la aplicación, en este caso se define un volumen 
- # llamado "mysql_data" que se monta en el contenedor en la ruta "/var/lib/mysql", 
- # que es donde MySQL almacena sus datos. Esto permite que los datos de la base de datos se mantengan 
- # persistentes incluso si el contenedor se detiene o se elimina.
+      - mysql_data:/var/lib/mysql
+
+# Volumen declarado arriba (mysql_data): Docker crea y gestiona el almacenamiento
 volumes:
   mysql_data:

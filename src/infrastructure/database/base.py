@@ -1,4 +1,5 @@
-#Base = sirve para que las clases de python se conviertan en tablas de la base de datos, es el nexo
+# Base declarativa de SQLAlchemy: todas las tablas ORM heredan de Base para compartir metadata.
+# Alembic y create_all() usan Base.metadata para conocer el esquema completo.
 
 from sqlalchemy.orm import declarative_base
 

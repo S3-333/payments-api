@@ -1,34 +1,46 @@
-#sqlalchemy es una biblioteca de Python que proporciona un conjunto de herramientas 
-# para trabajar con bases de datos. 
+# =============================================================================
+# Conexión a la base de datos (infraestructura).
+#
+# Este módulo define:
+# - engine: "motor" global de SQLAlchemy (pool de conexiones)
+# - SessionLocal: fábrica de sesiones (cada sesión = una unidad de trabajo / transacción lógica)
+#
+# Quién usa SessionLocal: src/presentation/api/deps.py -> get_db() -> yield session a la ruta.
+# =============================================================================
 
-#create_engine = Crea el motor de conexion (No conecta directamente todavía, solo lo prepara)
-#text = Permite escribir SQL crudo dentro de SQLAlchemy
+import os
+
+from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker #sessionmaker es una función que crea una clase de sesión personalizada, 
-# que se puede usar para crear instancias de conversacion que se conectan a la base de datos.
+from sqlalchemy.orm import sessionmaker
 
+# Busca archivo .env en el cwd (al ejecutar desde la raíz del proyecto encuentra ./.env)
+load_dotenv()
 
-DATABASE_URL = "mysql+pymysql://user:password@localhost:3306/payments" #URL de conexión a la base de datos, 
-# en este caso se está utilizando MySQL con el conector pymysql
-
-engine = create_engine(DATABASE_URL, echo=True) #echo=True es una opción que habilita el registro de todas 
-# las consultas SQL que se ejecutan en la terminal.
-
-#Una sesion es una conversación activa con la base de datos
-SessionLocal = sessionmaker(
-    autocommit=False, #Es falso, por lo que no se guardan cambios automaticamente
-    autoflush=False, #Es falso, por lo que no se envian cambios a la base de datos hasta que se haga commit
-    bind=engine #Indica que utilice este engine para conectarse a la base de datos
+# Cadena de conexión: debe coincidir con docker-compose (usuario, password, base, puerto)
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "mysql+pymysql://user:password@localhost:3306/payments",
 )
 
-def test_connection():
+# echo: si true, imprime cada SQL (útil para aprender; ruidoso en producción)
+engine = create_engine(DATABASE_URL, echo=os.getenv("SQL_ECHO", "false").lower() == "true")
+
+# sessionmaker crea una CLASE de sesión; cada llamada SessionLocal() = nueva sesión
+# autocommit=False -> hace falta commit() explícito (lo hacen los casos de uso)
+# autoflush=False -> no mandamos SQL intermedio hasta flush/commit salvo que lo pidamos
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+def test_connection() -> None:
+    """Script manual para verificar conectividad (python -m src.infrastructure.database.database)."""
     try:
         with engine.connect() as connection:
             result = connection.execute(text("SELECT 1"))
             print("Resultado:", result.scalar())
-            print("✅ Conexión exitosa")
+            print("Conexion OK")
     except Exception as e:
-        print("❌ Error:", e)
+        print("Error de conexion:", e)
 
 
 if __name__ == "__main__":

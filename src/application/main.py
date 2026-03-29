@@ -1,12 +1,11 @@
-from fastapi import FastAPI
-from src.application.api.routes import accounts, transfers
+# =============================================================================
+# Punto de entrada que suele usar uvicorn:  uvicorn src.application.main:app --reload
+#
+# ¿Por qué este archivo es tan corto? Para no duplicar la app FastAPI: la definición
+# real (routers, exception handlers) está en src/presentation/main.py.
+# Así solo cambias un sitio si añades rutas o middleware.
+# =============================================================================
 
-app = FastAPI(title="Payments API")
+from src.presentation.main import app
 
-app.include_router(accounts.router, prefix="/accounts", tags=["accounts"])
-app.include_router(transfers.router, prefix="/transfers", tags=["transfers"])
-
-
-@app.get("/")
-def root():
-    return {"message": "API running"}
+__all__ = ["app"]
