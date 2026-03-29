@@ -1,4 +1,6 @@
-# tests/integration/test_transfer_integration.py
+# Test de integración para la función de transferencia de dinero entre cuentas, 
+# utilizando una base de datos real (SQLite en memoria) para verificar que la lógica de 
+# transferencia funciona correctamente y que los cambios se reflejan en la base de datos.
 
 from decimal import Decimal
 
